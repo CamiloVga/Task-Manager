@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h1 class="mb-4">Mis Tareas</h1>
+        
+        <!-- Filtro de categorías -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <select id="category-filter" class="form-select">
+                    <option value="all">Todas las categorías</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Trabajo">Trabajo</option>
+                    <option value="Estudio">Estudio</option>
+                    <option value="Hogar">Hogar</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Lista de tareas -->
+        <div class="row mt-4">
+            {% for task in tasks %}
+            <div class="col-md-4 mb-4">
+                <div class="card task-card" data-category="{{ task.category }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ task.title }}</h5>
+                        <p class="card-text">{{ task.description }}</p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Categoría: {{ task.category }}<br>
+                                Estado: <span class="badge {% if task.status == 'completada' %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ task.status }}
+                                </span><br>
+                                {% if task.due_date %}
+                                <span class="due-date" data-date="{{ task.due_date.strftime('%Y-%m-%d') }}">
+                                    Fecha límite: {{ task.due_date.strftime('%Y-%m-%d') }}
+                                </span>
+                                {% endif %}
+                            </small>
+                        </p>
+                        <div class="btn-group">
+                            <a href="{{ url_for('edit_task', id=task.id) }}" 
+                               class="btn btn-primary btn-sm">Editar</a>
+                            <a href="{{ url_for('complete_task', id=task.id) }}" 
+                               class="btn btn-success btn-sm complete-task">Completar</a>
+                            <a href="{{ url_for('delete_task', id=task.id) }}" 
+                               class="btn btn-danger btn-sm"
+                               onclick="confirmDelete(event)">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Mensaje si no hay tareas -->
+        {% if not tasks %}
+        <div class="alert alert-info">
+            No hay tareas pendientes. ¡Agrega una nueva tarea!
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
